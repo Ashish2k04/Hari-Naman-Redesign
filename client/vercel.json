@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://hari-naman-redesign.onrender.com/api/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }
