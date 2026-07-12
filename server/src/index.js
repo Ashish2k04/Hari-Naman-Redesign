@@ -41,19 +41,24 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/carousel', require('./routes/carousel'));
 
 // Check if in production to serve built frontend assets
-if (process.env.NODE_ENV === 'production') {
-  // Serve static files from React build
-  app.use(express.static(path.join(__dirname, '../../client/dist')));
+// if (process.env.NODE_ENV === 'production') {
+//   // Serve static files from React build
+//   app.use(express.static(path.join(__dirname, '../../client/dist')));
   
-  // All other requests go to index.html
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../../client/dist/index.html'));
-  });
-} else {
-  app.get('/', (req, res) => {
-    res.send('Hari Naman Greens API is running...');
-  });
-}
+//   // All other requests go to index.html
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.resolve(__dirname, '../../client/dist/index.html'));
+//   });
+// } else {
+//   app.get('/', (req, res) => {
+//     res.send('Hari Naman Greens API is running...');
+//   });
+// }
+
+// Simple health-check route (frontend is deployed separately on Vercel)
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Hari Naman Greens API is running' });
+});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
