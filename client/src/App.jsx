@@ -5,9 +5,10 @@ import { CartProvider } from './context/CartContext';
 import LandingPage from './pages/LandingPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import logoImage from './assets/logo.jpg';
 
 // Configuration: Custom logo path can be configured here
-const LOGO_IMAGE_PATH = '/src/assets/logo.jpg';
+const LOGO_IMAGE_PATH = logoImage;
 
 function App() {
   const [admin, setAdmin] = useState(null);
