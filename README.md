@@ -1,8 +1,8 @@
 # Hari Naman Greens
 
-A full-stack grocery and dairy ordering website developed for **Hari Naman Greens** as a **real world client project**.
+A full stack grocery and dairy ordering website developed for **Hari Naman Greens** as a **real world client project**.
 
-This was my **first real-world client project**, where I built a complete web application for an actual business instead of building only a personal or practice project.
+This was my **first real world client project**, where I built a complete web application for an actual business instead of building only a personal or practice project.
 
 The project provides a customer facing storefront where customers can browse fresh vegetables and dairy products, manage their shopping basket, and place orders directly through WhatsApp.
 
