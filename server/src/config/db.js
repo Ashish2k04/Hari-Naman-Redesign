@@ -2,10 +2,12 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const connString = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/hari_naman_greens';
-    console.log(`Connecting to MongoDB at: ${connString}`);
-    const conn = await mongoose.connect(connString);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const connString = process.env.MONGODB_URI;
+     if (!connString) {
+      throw new Error('MONGODB_URI is not defined');
+    }
+    await mongoose.connect(connString);
+    console.log('MongoDB connected successfully');
   } catch (error) {
     console.error(`MongoDB connection error: ${error.message}`);
     process.exit(1);
