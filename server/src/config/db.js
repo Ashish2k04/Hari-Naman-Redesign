@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     const connString = process.env.MONGODB_URI;
-     if (!connString) {
+    
+    if (!connString) {
       throw new Error('MONGODB_URI is not defined');
     }
+    
     await mongoose.connect(connString);
     console.log('MongoDB connected successfully');
   } catch (error) {
