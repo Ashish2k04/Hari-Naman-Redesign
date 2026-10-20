@@ -8,9 +8,7 @@ The project provides a customer facing storefront where customers can browse fre
 
 It also includes a protected admin portal that allows the business owner to manage products, pricing, availability, promotional carousel banners, and admin account settings.
 
-## 🌐 Live Website
-
-https://harinamangreen.in/
+## 🌐 [Live Website](https://harinamangreen.in/)
 
 ---
 
