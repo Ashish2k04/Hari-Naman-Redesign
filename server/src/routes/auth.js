@@ -6,15 +6,21 @@ const { protect } = require('../middleware/auth');
 
 // Helper to generate JWT and set httpOnly cookie
 const sendTokenResponse = (admin, statusCode, res) => {
-  // Create token
+  // Ensure JWT_SECRET is configured
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not configured');
+  }
+
+  // Create JWT token
   const token = jwt.sign(
     { id: admin._id },
-    process.env.JWT_SECRET || 'fallback_secret_key_123456',
+    process.env.JWT_SECRET,
     { expiresIn: '30d' }
   );
 
+  // Configure secure cookie
   const cookieOptions = {
-    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     httpOnly: true,
     sameSite: 'lax'
   };
@@ -23,7 +29,8 @@ const sendTokenResponse = (admin, statusCode, res) => {
     cookieOptions.secure = true;
   }
 
-  res
+  // Send token in httpOnly cookie
+  return res
     .status(statusCode)
     .cookie('token', token, cookieOptions)
     .json({
@@ -36,57 +43,81 @@ const sendTokenResponse = (admin, statusCode, res) => {
     });
 };
 
-// @desc    Auth admin & get token cookie
+// @desc    Authenticate admin and return token cookie
 // @route   POST /api/auth/login
 // @access  Public
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  // Validate email & password
+  // Validate email and password
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: 'Please provide email and password' });
+    return res.status(400).json({
+      success: false,
+      message: 'Please provide email and password'
+    });
   }
 
   try {
-    // Check for admin
+    // Find admin by email
     const admin = await Admin.findOne({ email });
+
     if (!admin) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
     }
 
-    // Check if password matches
+    // Verify password
     const isMatch = await admin.matchPassword(password);
+
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
     }
 
-    sendTokenResponse(admin, 200, res);
+    // Generate token and send response
+    return sendTokenResponse(admin, 200, res);
   } catch (error) {
     console.error('Login error:', error.message);
-    res.status(500).json({ success: false, message: 'Server error during login' });
+
+    return res.status(500).json({
+      success: false,
+      message: 'Server error during login'
+    });
   }
 });
 
-// @desc    Log admin out / clear cookie
+// @desc    Log admin out and clear cookie
 // @route   POST /api/auth/logout
 // @access  Public
 router.post('/logout', (req, res) => {
-  res.cookie('token', 'none', {
-    expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: true
-  });
+  const cookieOptions = {
+    expires: new Date(0),
+    httpOnly: true,
+    sameSite: 'lax'
+  };
 
-  res.status(200).json({
-    success: true,
-    message: 'Logged out successfully'
-  });
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+  }
+
+  return res
+    .clearCookie('token', cookieOptions)
+    .status(200)
+    .json({
+      success: true,
+      message: 'Logged out successfully'
+    });
 });
 
-// @desc    Get current logged in admin
+// @desc    Get currently logged-in admin
 // @route   GET /api/auth/me
 // @access  Private
 router.get('/me', protect, (req, res) => {
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     admin: {
       id: req.admin._id,
