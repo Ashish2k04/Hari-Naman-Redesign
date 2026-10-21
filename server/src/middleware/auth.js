@@ -14,8 +14,13 @@ const protect = async (req, res, next) => {
   }
 
   try {
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+    
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key_123456');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Get admin from DB (excluding password)
     req.admin = await Admin.findById(decoded.id).select('-password');
